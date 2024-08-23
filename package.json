@@ -17,6 +17,11 @@
     "Payments"
   ],
   "author": "Damiano Chintala",
+  "homepage": "https://github.com/DamianoSilverhand/mtn-momo-node#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DamianoSilverhand/mtn-momo-node.git"
+  },
   "license": "MIT",
   "dependencies": {
     "axios": "^1.7.5",
