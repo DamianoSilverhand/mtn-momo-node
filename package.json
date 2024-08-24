@@ -20,7 +20,7 @@
   "homepage": "https://github.com/DamianoSilverhand/mtn-momo-node#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DamianoSilverhand/mtn-momo-node.git"
+    "url": "git+https://github.com/DamianoSilverhand/mtn-momo-node.git"
   },
   "license": "MIT",
   "dependencies": {
