@@ -1,6 +1,6 @@
 {
   "name": "mtn-momo-sdk",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A Node.js SDK to integrate with MTN MoMo API",
   "main": "lib/index.js",
   "directories": {
@@ -14,8 +14,22 @@
     "MoMo",
     "API",
     "SDK",
-    "Payments"
+    "Payments",
+    "Node.js",
+    "Payment Gateway",
+    "Mobile Money Payments",
+    "Financial Integration",
+    "Sandbox",
+    "Production",
+    "Callback",
+    "Bearer Token",
+    "REST API",
+    "HTTP Client",
+    "Node.js",
+    "MTN Node SDK",
+    "MTN MoMo Node SDK"
   ],
+  
   "author": "Damiano Chintala",
   "homepage": "https://github.com/DamianoSilverhand/mtn-momo-node#readme",
   "repository": {
