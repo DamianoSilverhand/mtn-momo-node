@@ -1,85 +1,108 @@
-# MTN MoMo SDK
+# MTN MoMo Payment Integration
 
-A simple library for integrating with the MTN MoMo Payment Collections API. This repository hosts a Node.js SDK for integrating with MTN MoMo (Mobile Money) API, specifically tailored for payment collections. The SDK provides an easy-to-use interface for developers to initiate payment requests, manage API users, generate API keys, and retrieve transaction statuses.
+This project provides a Node.js-based integration with the MTN MoMo API for processing mobile money payments. It supports both sandbox and production environments, handles real-time payment status callbacks, and includes a fallback polling mechanism.
 
-- [Getting Your API Credentials](#getting-your-api-credentials)
-- [Installation](#installation)
-- [Usage](#usage)
-- [API Reference](#api-reference)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
+## Features
 
-## Getting Your API Credentials
+- **Seamless Environment Switching**: Easily switch between sandbox and production environments via environment variables.
+- **Real-Time Callbacks**: Supports `providerCallbackHost` to receive real-time payment status updates.
+- **Polling Mechanism**: A fallback polling mechanism for cases where callback notifications fail.
+- **API User and Key Management**: Automatically creates API users and keys in the sandbox environment.
+- **Unique Payment References**: Generates unique payment reference IDs using `uuidv4()` for each transaction.
 
-To use the MTN MoMo Collections API, you need to generate your userId and userApiKey. Here's how you can generate them.
+## Prerequisites
 
-```bash
-npx momo-sandbox --callback-host <callbackHost> --primary-key <primaryKey>
-```
+- Node.js (>= 14.x)
+- NPM or Yarn
+- MTN MoMo API access (for both sandbox and production environments)
 
-Replace **`<callbackHost>`** with the URL of your callback host and **`<primaryKey>`** with your actual MTN Mobile Money API primary or secondary key.
+## Getting Started
 
-This command will generate a new user and display the **`userId`** and **`userApiKey`** in the console.
-
-**Note:** These credentials are specifically intended for use in the sandbox environment. In a production environment, you will be provided with the necessary credentials through the MTN OVA management dashboard after fulfilling the necessary KYC (Know Your Customer) requirements.
-
-## Installation
-
-Use the package manager [npm](https://www.npmjs.com/) to install `mtn-momo-sdk`.
+### 1. Install the package in your project
 
 ```bash
-npm install mtn-momo-sdk --save
+npm install mtn-momo-sdk
 ```
 
-## Usage
+### 3. Environment Configuration
 
-Here's an example of how you can use the MTN MoMo SDK in your project:
+Create a `.env` file in your project root and add the following variables:
+
+```bash
+# General Configuration
+MTN_MOMO_ENV=sandbox                     # Set to 'production' or 'sandbox'
+LOCAL_CURRENCY=ZMW                       # Local currency for transactions
+
+# Sandbox Configuration
+MOMO_API_BASE_URL_SANDBOX=https://sandbox.momodeveloper.mtn.com
+X_TARGET_ENVIRONMENT_SANDBOX=sandbox
+SUBSCRIPTION_KEY_SANDBOX=<your_sandbox_subscription_key>
+PROVIDER_CALLBACK_HOST_SANDBOX=<your_sandbox_callback_url>
+
+# Production Configuration
+MOMO_API_BASE_URL_PRODUCTION=https://your-production-api-url.com
+X_TARGET_ENVIRONMENT_PRODUCTION=production
+SUBSCRIPTION_KEY_PRODUCTION=<your_production_subscription_key>
+API_USER_PRODUCTION=<your_production_api_user>
+API_KEY_PRODUCTION=<your_production_api_key>
+PROVIDER_CALLBACK_HOST_PRODUCTION=<your_production_callback_url>
+```
+
+### 4. Running the Application
+
+To test the integration in **sandbox** mode, ensure that the `MTN_MOMO_ENV` is set to `sandbox` in your `.env` file.
+
+```bash
+npm start
+```
+
+### 5. Payment Processing
+
+Use the provided `processPayment` function to initiate a payment. Here's an example of how to call it:
 
 ```javascript
 const { processPayment } = require('mtn-momo-sdk');
 
 async function initiatePayment() {
     try {
-        const status = await processPayment('100.00', '260772123456', 'Test Payment');
-        console.log('Transaction Status:', status);
+        const amount = '100.00';
+        const phone = '260XXXXXXXXX';  // Recipient's phone number
+        const reference = 'Invoice #12345';  // Reference for the payment
+
+        const status = await processPayment(amount, phone, reference);
+        console.log('Final Payment Status:', status);
     } catch (error) {
-        console.error('Payment error:', error);
+        console.error('Error initiating payment:', error.message);
     }
 }
 
 initiatePayment();
 ```
 
-## API Reference
+## For Developers
 
-### `processPayment(amount, phone, reference)`
+### `createApiUser(subscriptionKey, providerCallbackHost, xReferenceId)`
+Used to create an API user in the sandbox environment.
 
-Initiates a payment request using the MTN MoMo Collections API.
+### `createApiKey(subscriptionKey, xReferenceId)`
+Generates an API key for the newly created API user.
 
-- **`amount`**: The amount to be paid (e.g., `'100.00'`).
-- **`phone`**: The payer's phone number (e.g., `'256772123456'`).
-- **`reference`**: A reference string for the payment (e.g., `'Test Payment'`).
+### `createBearerToken(subscriptionKey, xReferenceId, apiKey)`
+Creates a Bearer token using the API user and key to authenticate subsequent requests.
 
-Returns a promise that resolves to the payment status string.
+### `requestPayment(xReferenceId, subscriptionKey, tokenSanitized, amount, phone, ref, providerCallbackHost)`
+Initiates the payment request.
 
-### Environment Variables
+### `getPaymentStatus(subscriptionKey, tokenSanitized, xReferenceId)`
+Retrieves the status of the payment request.
 
-Ensure that your `.env` file includes the following variables:
+### `pollPaymentStatus(subscriptionKey, tokenSanitized, xReferenceId, retries = 5, delay = 50000)`
+Polls for the payment status if the callback fails, retrying up to a specified number of times.
 
-- **`SUBSCRIPTION_KEY`**: Your MTN MoMo API primary or secondary key.
-- **`PROVIDER_CALLBACK_HOST`**: The callback URL for receiving payment notifications.
-- **`X_TARGET_ENVIRONMENT`**: The target environment (e.g., `'sandbox'`).
-- **`MOMO_API_BASE_URL`**: The base URL for the MTN MoMo API (e.g., `'https://sandbox.momodeveloper.mtn.com'`, for the Sandbox).
+## Error Handling
 
-Example `.env` file:
-
-```env
-SUBSCRIPTION_KEY=your_subscription_key
-PROVIDER_CALLBACK_HOST=your_callback_host
-X_TARGET_ENVIRONMENT=sandbox
-MOMO_API_BASE_URL=https://sandbox.momodeveloper.mtn.com/
-```
+- In case of an error during API requests, detailed error responses are logged.
+- If the callback URL fails, the fallback polling mechanism ensures that the payment status is eventually retrieved.
 
 ## Roadmap
 
