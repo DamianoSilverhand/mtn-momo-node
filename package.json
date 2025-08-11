@@ -1,6 +1,6 @@
 {
   "name": "mtn-momo-sdk",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A Node.js SDK to integrate with MTN MoMo API",
   "main": "lib/index.js",
   "directories": {
@@ -29,7 +29,6 @@
     "MTN Node SDK",
     "MTN MoMo Node SDK"
   ],
-  
   "author": "Damiano Chintala",
   "homepage": "https://github.com/DamianoSilverhand/mtn-momo-node#readme",
   "repository": {
